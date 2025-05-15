@@ -61,4 +61,54 @@
     </form>
   </header>
 
-  <main>
+  <main>     <div class="section">
+      <h2>Palpites Inteligentes</h2>
+      {% if palpites %}
+        <p>Estes são os 5 números mais prováveis com base nos últimos resultados da roleta:</p>
+        <ul>
+          {% for num in palpites %}
+            <li style="font-size: 20px; font-weight: bold;">Número: {{ num }}</li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>Não foi possível gerar os palpites agora. Tente novamente mais tarde.</p>
+      {% endif %}
+    </div>
+<div class="section">
+  <h2>Estatísticas dos Últimos Resultados</h2>
+  <canvas id="graficoRoleta" width="400" height="200"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // Dados de exemplo: números e suas frequências
+  const dados = {
+    labels: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],  // números da roleta
+    datasets: [{
+      label: 'Frequência',
+      data: [5, 8, 6, 10, 4, 7, 9, 3, 2, 1],  // exemplo de frequências (vai substituir depois)
+      backgroundColor: 'rgba(233, 30, 99, 0.7)'
+    }]
+  };
+
+  const config = {
+    type: 'bar',
+    data: dados,
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      },
+      plugins: {
+        legend: { labels: { color: 'white' } }
+      }
+    }
+  };
+
+  const meuGrafico = new Chart(
+    document.getElementById('graficoRoleta'),
+    config
+  );
+</script>
+
