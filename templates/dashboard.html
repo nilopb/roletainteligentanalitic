@@ -1,83 +1,27 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Dashboard - Roleta Brasileira</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    background-color: #121212;
-    color: #eee;
-    margin: 0;
-    padding: 1rem;
-    transition: background-color 0.3s, color 0.3s;
-  }
-  header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-  }
-  .toggle-theme {
-    background: #00ffcc;
-    border: none;
-    border-radius: 20px;
-    padding: 0.3rem 1rem;
-    cursor: pointer;
-    font-weight: bold;
-    color: #121212;
-  }
-  h1 {
-    margin: 0;
-  }
-  .content {
-    max-width: 900px;
-    margin: 0 auto;
-  }
-  .section {
-    background: #1f1f1f;
-    border-radius: 12px;
-    padding: 1rem;
-    margin-bottom: 1.5rem;
-  }
-  .section h2 {
-    color: #00ffcc;
-  }
-  #predictions-list {
-    list-style: none;
-    padding: 0;
-  }
-  #predictions-list li {
-    padding: 0.5rem 0;
-    border-bottom: 1px solid #333;
-  }
-  canvas {
-    background: #000;
-    border-radius: 12px;
-    max-width: 100%;
-  }
-  .logout-btn {
-    background: #ff4c4c;
-    border: none;
-    border-radius: 8px;
-    color: white;
-    padding: 0.5rem 1rem;
-    cursor: pointer;
-    font-weight: bold;
-  }
-  .logout-btn:hover {
-    background: #e03c3c;
-  }
-</style>
-</head>
-<body>
-  <header>
-    <h1>Roleta Brasileira</h1>
-    <button class="toggle-theme" id="toggle-theme">Modo Noturno</button>
-    <form method="POST" action="{{ url_for('logout') }}" style="display:inline;">
-      <button type="submit" class="logout-btn">Sair</button>
-    </form>
-  </header>
-  <d
+from flask import Flask, render_template, session, redirect, url_for
+
+app = Flask(__name__)
+app.secret_key = 'sua_chave_secreta_aqui'  # Troque para algo seguro
+
+# Função simulada para pegar previsões e histórico — substitua depois pela lógica real
+def pegar_dados_roleta():
+    previsoes = {
+        'labels': ['7', '22', '15', '3', '18'],
+        'probabilidades': [25, 20, 18, 15, 12]
+    }
+    historico = {
+        'labels': ['1', '3', '7', '10', '15', '18', '22', '25', '28', '32'],
+        'frequencias': [4, 6, 8, 3, 5, 7, 6, 2, 1, 3]
+    }
+    return previsoes, historico
+
+@app.route('/dashboard')
+def dashboard():
+    if not session.get('user_logged_in'):
+        return redirect(url_for('login'))  # Protege a página para quem não está logado
+
+    previsoes, historico = pegar_dados_roleta()
+
+    return render_template('dashboard.html', 
+                           previsoes=previsoes,
+                           historico=historico)
