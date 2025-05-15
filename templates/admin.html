@@ -1,20 +1,70 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <title>Admin - Roleta Brasileira</title>
-  <link rel="stylesheet" href="/static/style.css" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Painel Admin - Roleta Brasileira</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #121212;
+    color: #eee;
+    margin: 0;
+    padding: 1rem;
+  }
+  h1 {
+    color: #00ffcc;
+    text-align: center;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+  }
+  th, td {
+    border: 1px solid #333;
+    padding: 0.6rem;
+    text-align: left;
+  }
+  th {
+    background: #00ffcc;
+    color: #121212;
+  }
+  tr:nth-child(even) {
+    background: #1f1f1f;
+  }
+  .btn-delete {
+    background: #ff4c4c;
+    border: none;
+    padding: 0.3rem 0.6rem;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  .btn-delete:hover {
+    background: #e03c3c;
+  }
+  .logout-btn {
+    background: #00ffcc;
+    border: none;
+    border-radius: 8px;
+    color: #121212;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 1rem;
+    display: block;
+    width: 100px;
+    margin-left: auto;
+  }
+  .alert-box {
+    background: #ff4c4c;
+    padding: 1rem;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    color: white;
+    font-weight: bold;
+  }
+</style>
 </head>
-<body>
-  <div class="container">
-    <h2>Painel de Administração</h2>
-    <h3>Usuários cadastrados:</h3>
-    <ul>
-      {% for user in users %}
-      <li>{{ user.username }} (ID: {{ user.id }})</li>
-      {% endfor %}
-    </ul>
-    <a href="{{ url_for('logout') }}">Sair</a>
-  </div>
-</body>
-</html>
+<b
