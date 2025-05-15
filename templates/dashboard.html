@@ -1,27 +1,89 @@
-from flask import Flask, render_template, session, redirect, url_for
+{% extends "base.html" %}
 
-app = Flask(__name__)
-app.secret_key = 'sua_chave_secreta_aqui'  # Troque para algo seguro
+{% block title %}Dashboard{% endblock %}
 
-# Função simulada para pegar previsões e histórico — substitua depois pela lógica real
-def pegar_dados_roleta():
-    previsoes = {
-        'labels': ['7', '22', '15', '3', '18'],
-        'probabilidades': [25, 20, 18, 15, 12]
+{% block content %}
+<h1>Dashboard - Estatísticas da Roleta</h1>
+
+<canvas id="chartPredictions" width="400" height="200"></canvas>
+<canvas id="chartHistory" width="400" height="200" style="margin-top:2rem;"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const predictionLabels = {{ previsoes.labels|tojson }};
+  const predictionData = {{ previsoes.probabilidades|tojson }};
+
+  const ctxPred = document.getElementById('chartPredictions').getContext('2d');
+  const chartPredictions = new Chart(ctxPred, {
+    type: 'bar',
+    data: {
+      labels: predictionLabels,
+      datasets: [{
+        label: 'Probabilidade (%)',
+        data: predictionData,
+        backgroundColor: 'rgba(0, 255, 204, 0.7)',
+        borderColor: 'rgba(0, 255, 204, 1)',
+        borderWidth: 1,
+        borderRadius: 6,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        title: {
+          display: true,
+          text: '5 Previsões Mais Prováveis'
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          max: 30,
+          ticks: {
+            stepSize: 5
+          }
+        }
+      }
     }
-    historico = {
-        'labels': ['1', '3', '7', '10', '15', '18', '22', '25', '28', '32'],
-        'frequencias': [4, 6, 8, 3, 5, 7, 6, 2, 1, 3]
+  });
+
+  const historyLabels = {{ historico.labels|tojson }};
+  const historyData = {{ historico.frequencias|tojson }};
+
+  const ctxHist = document.getElementById('chartHistory').getContext('2d');
+  const chartHistory = new Chart(ctxHist, {
+    type: 'line',
+    data: {
+      labels: historyLabels,
+      datasets: [{
+        label: 'Frequência no Último Jogo',
+        data: historyData,
+        fill: false,
+        borderColor: 'rgba(0, 255, 204, 1)',
+        tension: 0.3,
+        pointRadius: 6,
+        pointHoverRadius: 8,
+        pointBackgroundColor: 'rgba(0, 255, 204, 0.8)',
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        title: {
+          display: true,
+          text: 'Histórico dos Últimos 10 Números'
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            stepSize: 1
+          }
+        }
+      }
     }
-    return previsoes, historico
-
-@app.route('/dashboard')
-def dashboard():
-    if not session.get('user_logged_in'):
-        return redirect(url_for('login'))  # Protege a página para quem não está logado
-
-    previsoes, historico = pegar_dados_roleta()
-
-    return render_template('dashboard.html', 
-                           previsoes=previsoes,
-                           historico=historico)
+  });
+</script>
+{% endblock %}
