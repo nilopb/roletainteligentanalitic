@@ -1,223 +1,143 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Área Principal - Roleta Brasileira</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #121212;
-      color: #eee;
-      margin: 0;
-      padding: 1rem;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    header {
-      width: 100%;
-      max-width: 900px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-    }
-    header h1 {
-      color: #00ffcc;
-    }
-    button.logout {
-      background: #ff4444;
-      border: none;
-      border-radius: 5px;
-      padding: 0.5rem 1rem;
-      color: white;
-      cursor: pointer;
-      font-weight: bold;
-      transition: background 0.3s ease;
-    }
-    button.logout:hover {
-      background: #cc3333;
-    }
-    .content {
-      width: 100%;
-      max-width: 900px;
-      background: #1f1f1f;
-      border-radius: 10px;
-      padding: 1rem;
-      box-shadow: 0 0 15px #00ffcc;
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-    }
-    .section {
-      background: #282828;
-      padding: 1rem;
-      border-radius: 8px;
-    }
-    h2 {
-      margin-top: 0;
-      color: #00ffcc;
-    }
-    /* Gráfico */
-    canvas {
-      background: #121212;
-      border-radius: 8px;
-      max-width: 100%;
-      height: 300px;
-    }
-    /* Modo noturno simples já implementado no background */
-    /* Responsividade */
-    @media (max-width: 600px) {
-      .content {
-        padding: 0.5rem;
-      }
-      canvas {
-        height: 200px;
-      }
-    }
-    /* Botões */
-    button.action-btn {
-      background: #00ffcc;
-      border: none;
-      border-radius: 5px;
-      padding: 0.6rem 1rem;
-      font-weight: bold;
-      color: #121212;
-      cursor: pointer;
-      transition: background 0.3s ease;
-      margin-right: 0.5rem;
-    }
-    button.action-btn:hover {
-      background: #00d1aa;
-    }
-    /* Form simulador */
-    form.simulator-form label {
-      display: block;
-      margin-bottom: 0.3rem;
-    }
-    form.simulator-form input, form.simulator-form select {
-      width: 100%;
-      padding: 0.4rem;
-      margin-bottom: 0.8rem;
-      border-radius: 4px;
-      border: none;
-      background: #333;
-      color: #eee;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Painel do Administrador - Roleta Brasileira</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #121212;
+    color: #eee;
+    margin: 0;
+    padding: 1rem;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  header {
+    width: 100%;
+    max-width: 900px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  header h1 {
+    color: #00ffcc;
+  }
+  button.logout {
+    background: #ff4444;
+    border: none;
+    border-radius: 5px;
+    padding: 0.5rem 1rem;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s ease;
+  }
+  button.logout:hover {
+    background: #cc3333;
+  }
+  .content {
+    width: 100%;
+    max-width: 900px;
+    background: #1f1f1f;
+    border-radius: 10px;
+    padding: 1rem;
+    box-shadow: 0 0 15px #00ffcc;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #282828;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  th, td {
+    padding: 0.6rem 0.8rem;
+    border-bottom: 1px solid #444;
+    text-align: left;
+  }
+  th {
+    background: #00ffcc;
+    color: #121212;
+  }
+  tr:hover {
+    background: #333;
+  }
+  button.delete-btn {
+    background: #ff4444;
+    border: none;
+    padding: 0.3rem 0.6rem;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s ease;
+  }
+  button.delete-btn:hover {
+    background: #cc3333;
+  }
+  .alert-box {
+    background: #ff4c4c;
+    color: #fff;
+    padding: 0.8rem;
+    border-radius: 5px;
+    text-align: center;
+  }
+</style>
 </head>
 <body>
-  <header>
-    <h1>Roleta Brasileira - Bem vindo, {{ user }}</h1>
-    <form method="POST" action="{{ url_for('logout') }}">
-      <button type="submit" class="logout">Sair</button>
-    </form>
-  </header>
+<header>
+  <h1>Painel do Administrador</h1>
+  <form method="POST" action="{{ url_for('admin_logout') }}">
+    <button type="submit" class="logout">Sair</button>
+  </form>
+</header>
 
-  <div class="content">
-    <section class="section" id="palpites">
-      <h2>Palpites Automáticos</h2>
-      <ul id="palpites-list">
-        {% for palpite in predictions %}
-          <li>{{ palpite }}</li>
+<div class="content">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert-box {{category}}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <section>
+    <h2>Usuários Cadastrados</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Usuário</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in users %}
+        <tr>
+          <td>{{ user['id'] }}</td>
+          <td>{{ user['username'] }}</td>
+          <td>
+            <form method="POST" action="{{ url_for('admin_delete_user', user_id=user['id']) }}" onsubmit="return confirm('Confirma a exclusão do usuário?');">
+              <button type="submit" class="delete-btn">Excluir</button>
+            </form>
+          </td>
+        </tr>
         {% else %}
-          <li>Nenhum palpite disponível.</li>
+        <tr>
+          <td colspan="3">Nenhum usuário cadastrado.</td>
+        </tr>
         {% endfor %}
-      </ul>
-      <button class="action-btn" id="btnAtualizarPalpites">Atualizar Palpites</button>
-    </section>
-
-    <section class="section" id="grafico-estatisticas">
-      <h2>Estatísticas da Roleta</h2>
-      <canvas id="estatisticasChart"></canvas>
-    </section>
-
-    <section class="section" id="simulador-apostas">
-      <h2>Simulação de Apostas</h2>
-      <form class="simulator-form" id="simulatorForm">
-        <label for="numero">Número da roleta (0-36):</label>
-        <input type="number" id="numero" name="numero" min="0" max="36" required />
-        
-        <label for="valor">Valor da aposta (R$):</label>
-        <input type="number" id="valor" name="valor" min="1" step="0.01" required />
-        
-        <button type="submit" class="action-btn">Simular Aposta</button>
-      </form>
-      <div id="resultadoSimulacao" style="margin-top: 1rem; color:#00ffcc;"></div>
-    </section>
-
-    <section class="section" id="roleta-ao-vivo">
-      <h2>Roleta Ao Vivo</h2>
-      <iframe src="https://lxgo.me/go?brand=lotusbet&bta=30173_0253" width="100%" height="350" frameborder="0" allowfullscreen></iframe>
-    </section>
-  </div>
-
-  <script>
-    // Chart.js - Exemplo básico de gráfico de frequência dos números da roleta
-    const ctx = document.getElementById('estatisticasChart').getContext('2d');
-    const frequencias = {{ frequencies | tojson }};
-    const numeros = Object.keys(frequencias);
-    const valores = Object.values(frequencias);
-
-    const chart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: numeros,
-        datasets: [{
-          label: 'Frequência dos Números',
-          data: valores,
-          backgroundColor: 'rgba(0, 255, 204, 0.7)',
-          borderColor: 'rgba(0, 255, 204, 1)',
-          borderWidth: 1
-        }]
-      },
-      options: {
-        responsive: true,
-        scales: {
-          y: {
-            beginAtZero: true,
-            ticks: { color: '#eee' }
-          },
-          x: {
-            ticks: { color: '#eee' }
-          }
-        },
-        plugins: {
-          legend: {
-            labels: { color: '#00ffcc' }
-          }
-        }
-      }
-    });
-
-    // Simulação de apostas
-    const form = document.getElementById('simulatorForm');
-    const resultadoDiv = document.getElementById('resultadoSimulacao');
-
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const numero = parseInt(form.numero.value);
-      const valor = parseFloat(form.valor.value);
-
-      if (numero < 0 || numero > 36 || isNaN(valor) || valor <= 0) {
-        resultadoDiv.textContent = "Por favor, insira um número e valor válidos.";
-        return;
-      }
-
-      // Simulação simples: pagamento 35x se acerta número exato
-      const premio = valor * 35;
-
-      resultadoDiv.textContent = `Se seu número sair, você ganhará R$ ${premio.toFixed(2)}!`;
-    });
-
-    // Botão atualizar palpites (fictício - poderia chamar API para atualizar)
-    document.getElementById('btnAtualizarPalpites').addEventListener('click', () => {
-      alert('Atualização de palpites implementada no backend.');
-      location.reload();
-    });
-  </script>
+      </tbody>
+    </table>
+  </section>
+</div>
 </body>
 </html>
