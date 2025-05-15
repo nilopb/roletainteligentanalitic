@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dashboard - Roleta Brasileira</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <div class="container">
+    <h2>Bem-vindo, {{ username }}!</h2>
+    <p>Área principal do usuário - aqui você pode ver previsões, gráficos e simular apostas.</p>
+    <a href="{{ url_for('logout') }}">Sair</a>
+  </div>
+</body>
+</html>
