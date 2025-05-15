@@ -1,89 +1,64 @@
-{% extends "base.html" %}
-
-{% block title %}Dashboard{% endblock %}
-
-{% block content %}
-<h1>Dashboard - Estatísticas da Roleta</h1>
-
-<canvas id="chartPredictions" width="400" height="200"></canvas>
-<canvas id="chartHistory" width="400" height="200" style="margin-top:2rem;"></canvas>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-  const predictionLabels = {{ previsoes.labels|tojson }};
-  const predictionData = {{ previsoes.probabilidades|tojson }};
-
-  const ctxPred = document.getElementById('chartPredictions').getContext('2d');
-  const chartPredictions = new Chart(ctxPred, {
-    type: 'bar',
-    data: {
-      labels: predictionLabels,
-      datasets: [{
-        label: 'Probabilidade (%)',
-        data: predictionData,
-        backgroundColor: 'rgba(0, 255, 204, 0.7)',
-        borderColor: 'rgba(0, 255, 204, 1)',
-        borderWidth: 1,
-        borderRadius: 6,
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { display: false },
-        title: {
-          display: true,
-          text: '5 Previsões Mais Prováveis'
-        }
-      },
-      scales: {
-        y: {
-          beginAtZero: true,
-          max: 30,
-          ticks: {
-            stepSize: 5
-          }
-        }
-      }
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Área do Usuário - Roleta Brasileira</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #121212;
+      color: #fff;
     }
-  });
-
-  const historyLabels = {{ historico.labels|tojson }};
-  const historyData = {{ historico.frequencias|tojson }};
-
-  const ctxHist = document.getElementById('chartHistory').getContext('2d');
-  const chartHistory = new Chart(ctxHist, {
-    type: 'line',
-    data: {
-      labels: historyLabels,
-      datasets: [{
-        label: 'Frequência no Último Jogo',
-        data: historyData,
-        fill: false,
-        borderColor: 'rgba(0, 255, 204, 1)',
-        tension: 0.3,
-        pointRadius: 6,
-        pointHoverRadius: 8,
-        pointBackgroundColor: 'rgba(0, 255, 204, 0.8)',
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        title: {
-          display: true,
-          text: 'Histórico dos Últimos 10 Números'
-        }
-      },
-      scales: {
-        y: {
-          beginAtZero: true,
-          ticks: {
-            stepSize: 1
-          }
-        }
-      }
+    header {
+      background-color: #1f1f1f;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #333;
     }
-  });
-</script>
-{% endblock %}
+    header h1 {
+      font-size: 20px;
+      margin: 0;
+    }
+    header button {
+      background: #e91e63;
+      border: none;
+      color: #fff;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    header button:hover {
+      background: #c2185b;
+    }
+    main {
+      padding: 20px;
+    }
+    .welcome {
+      font-size: 18px;
+      margin-bottom: 25px;
+    }
+    .section {
+      background: #1e1e1e;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    .section h2 {
+      margin-top: 0;
+      color: #e91e63;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Roleta Brasileira</h1>
+    <form action="{{ url_for('logout') }}" method="GET">
+      <button type="submit">Sair</button>
+    </form>
+  </header>
+
+  <main>
