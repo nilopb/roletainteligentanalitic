@@ -61,7 +61,12 @@ def dashboard():
     if 'user_id' not in session:
         flash('Faça login para acessar essa página.', 'error')
         return redirect(url_for('login'))
-    return render_template('dashboard.html', username=session.get('username'))
+
+    from roleta_analise import analisar_roleta
+    palpites = analisar_roleta()
+
+    return render_template('dashboard.html', username=session.get('username'), palpites=palpites)
+
 
 @app.route('/logout')
 def logout():
